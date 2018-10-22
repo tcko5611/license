@@ -35,12 +35,14 @@ class EchoThread(threading.Thread):
             token = self.server.getToken(int(data[1]))
             if token != None:
                 self.s.sendall(token.encode())
-            self.s.sendall(b'FAIL')
+            else:
+                self.s.sendall(b'FAIL')
         elif re.match(r'validateToken@.+', s):
             data = s.split('@', 1)
             if self.server.validateToken(data[1]) :
                self.s.sendall(b'SUCCESS')
-            self.s.sendall(b'FAIL')
+            else:
+                self.s.sendall(b'FAIL')
         else:
             self.s.sendall(b'FAIL') 
         
