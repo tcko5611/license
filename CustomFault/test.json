@@ -1,0 +1,15 @@
+{
+    "LmServer" : {
+	"host" : "tcko-PC",
+	"port" : 5008
+    },
+    "License" : {
+	"feature" : "Newfeature",
+	"nlic" : 2
+    },
+    "dpconfig_file" : "hosts",
+    "outputDir" : "tmp",
+    "outputPrefix" : "customsim",
+    "workerDir" : "worker"
+}
+

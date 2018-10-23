@@ -2,8 +2,7 @@
 import os
 import threading
 import socket
-#from SclApis import *
-
+## @package scl apis, need to enviroment variable LM_SERVER setting
 def scl_checkout(feature, nlic):
     if feature == 'DVP':
         return True

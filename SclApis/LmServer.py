@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 # Echo server program
+import argparse
 import os
 import socket
 import threading
@@ -47,17 +48,10 @@ class EchoThread(threading.Thread):
             self.s.sendall(b'FAIL') 
         
 class LmServer(metaclass = Singleton):
-    HOST = ''
-    PORT = 50007
     tokens = []
-    def __init__(self):
-        a = os.environ.get('LM_SERVER')
-        if a != None:
-            hostPort = a.split('@')
-            HOST = hostPort[0]
-            PORT = int(hostPort[1]) 
-            self.HOST = HOST
-            self.PORT = PORT
+    def __init__(self, host, port):
+        self.HOST = host
+        self.PORT = port
         self.lock = threading.Lock()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.bind((self.HOST, self.PORT))
@@ -70,7 +64,8 @@ class LmServer(metaclass = Singleton):
     def createTokens(self, num):
         with self.lock:
             for i in range(num):
-                token = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
+                token = ''.join(random.choice(string.ascii_letters + \
+                                              string.digits) for _ in range(8))
                 self.tokens.append(token)
 
     def getToken(self, i):
@@ -90,7 +85,14 @@ class LmServer(metaclass = Singleton):
             self.tokens = []
         
 if __name__ == '__main__':
-    LmServer()
+    parser = argparse.ArgumentParser(description='star LM server')
+    parser.add_argument('--host', metavar='host', type=str, required=True,
+                        help='host name')
+    parser.add_argument('--port', metavar='port', type=int, required=True,
+                        help='port number')
+    
+    args = parser.parse_args()
+    LmServer(args.host, args.port)
 
 
 
