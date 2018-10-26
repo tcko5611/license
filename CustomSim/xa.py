@@ -27,7 +27,10 @@ if __name__ == '__main__':
             
     dirname = os.path.dirname(args.output)
     if (dirname != '') and (not os.path.exists(dirname)):
-        os.makedirs(dirname)
+        try :
+            os.makedirs(dirname)
+        except FileExistsError:
+            print (dirname + ' directory exists')
     # print(os.path.basename(args.output))
 
     outFileName = args.output + '.log'
