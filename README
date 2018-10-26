@@ -1,15 +1,17 @@
-0. Need to log into machines in test/hosts for use python3
+1. git clone /remote/tw_rnd1/ktc/license
 
-1. Start License server:
+2. Need to log into machines in test/hosts for use python3
+
+3. Start License server:
    in SclApis directory, invoke like:
    ./LmServer.py --host fsei317 --port 50008
 
-2. set enviroment variable for license server:
+4. set enviroment variable for license server:
    setenv LM_SERVER fsei317@50008
 
-3. in tests directory, run like follows:
-   3.1 run with json file directory like:
+5. in tests directory, run like follows:
+   5.1 run with json file directory like:
        ../CustomFault/CustomFault -j testDVP.json
-   3.2 run for gui
+   5.2 run for gui
        ./CustomFault/CustomFault -g 1 
    

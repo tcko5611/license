@@ -34,7 +34,11 @@ class CollectMachines():
         
         command = ['/usr/bin/rsh', host, 'ls', '>/dev/null']
         process = subprocess.Popen(command)
-        process.wait(timeout=10)
+        try :
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            print (host + ' host expired')
+            return False
         process.kill()
         if process.returncode != 0 :
             return False
