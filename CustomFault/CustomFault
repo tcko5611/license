@@ -1,0 +1,28 @@
+#! /depot/Python-3.5.2/bin/python
+
+import os
+import sys
+import subprocess
+import argparse
+
+abspath = os.path.abspath(sys.argv[0])
+os.environ['PYTHONPATH'] = os.path.dirname(os.path.dirname(abspath))
+
+parser = argparse.ArgumentParser(description='CustomFault simulator')
+parser.add_argument('--json', '-j', type=str, help='json file')
+parser.add_argument('--gui', '-g', type=int, help='invoke gui with 1')
+args = parser.parse_args()
+command = None
+if args.json:
+    executable = os.path.dirname(abspath) + '/TasksManager.py'
+    command  = [executable, '--json', args.json]
+elif  args.gui == 1:
+    executable = os.path.dirname(abspath) + '/MainWindow.py'
+    command  = [executable]
+
+if command:    
+    process = subprocess.Popen(command)
+    process.wait()
+    sys.exit(process.returncode)
+print('Use CustomFault -h for help')
+sys.exit(1)

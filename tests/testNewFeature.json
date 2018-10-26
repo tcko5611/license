@@ -1,0 +1,13 @@
+{
+    "license" : {
+	"prod_name" : "xa",
+	"prod_version" : "2018.09",
+	"feature" : "NewFeature",
+	"nlic" : 2
+    },
+    "simulator" : "/remote/tw_rnd1/ktc/license/CustomSim/xa",
+    "dpconfig_file" : "/remote/tw_rnd1/ktc/license/tests/hosts",
+    "outdir" : "testFeature",
+    "cases_num" : 100,
+    "outprefix" : "testNewFeature"
+}

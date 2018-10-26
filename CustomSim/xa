@@ -1,0 +1,30 @@
+#! /depot/Python-3.5.2/bin/python
+
+import os
+import sys
+import subprocess
+import argparse
+
+abspath = os.path.abspath(sys.argv[0])
+executable = os.path.dirname(abspath) + '/xa.py'
+os.environ['PYTHONPATH'] = os.path.dirname(os.path.dirname(abspath))
+
+parser = argparse.ArgumentParser(description='xa simulator')
+parser.add_argument('--token', '-token', type=str, help='token for server')
+parser.add_argument('--input', '-i', type=str, required=True, help='input name')
+parser.add_argument('--output', '-o', type=str, required=True, help='output file prefix')
+args = parser.parse_args()
+command = [executable]
+if args.token:
+    command.append('-t')
+    command.append(args.token)
+
+command.append('-o')
+command.append(args.output)
+command.append('-i')
+command.append(args.input)
+
+process = subprocess.Popen(command)
+process.wait()
+sys.exit(process.returncode)
+
