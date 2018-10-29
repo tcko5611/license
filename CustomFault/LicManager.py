@@ -70,7 +70,7 @@ class LicManager():
             return False
 
 if __name__ == '__main__':
-    a = LicManger('xa', '2008.09', 'NewFeature', 2)
-    print(id(a))
+    a = LicManager('xa', '2008.09', 'NewFeature', 2)
+    # print(id(a))
     for i in range(21):
         print (a.popToken())

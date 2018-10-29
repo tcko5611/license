@@ -2,16 +2,21 @@
 
 2. Need to log into machines in test/hosts for use python3
 
-3. Start License server:
+3. Use the following command to generate neeeded GUI file
+   make 
+
+4. Start License server:
    in SclApis directory, invoke like:
-   ./LmServer.py --host fsei317 --port 50008
+     ./LmServer.py --host fsei317 --port 50008
+   or invoke gui interace by:
+     ./MainWindow.py
 
 4. set enviroment variable for license server:
    setenv LM_SERVER fsei317@50008
 
-5. in tests directory, run like follows:
-   5.1 run with json file directory like:
+5. goto tests directory, run like follows:
+   5.1 run with json file direct like:
        ../CustomFault/CustomFault -j testDVP.json
    5.2 run for gui
-       ./CustomFault/CustomFault -g 1 
+       ../CustomFault/CustomFault -g 1 
    

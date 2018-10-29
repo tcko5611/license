@@ -17,8 +17,8 @@ class ReportManager():
 
     def execute(self):
         outdir = os.path.abspath(self.jsonParser['outdir'])
-        fileName = outdir + '/' + self.jsonParser['outprefix'] + '.log'
-        with open(fileName, 'w') as f:
+        self.fileName = outdir + '/' + self.jsonParser['outprefix'] + '.log'
+        with open(self.fileName, 'w') as f:
             f.write('CustomFault \n')
             f.write('Jobs to run: {}\n'.format(self.tasksManager.jobsNum))
             f.write('Success Jobs: {}\n'.format(self.tasksManager.ok))
@@ -181,8 +181,11 @@ class TasksManager(QObject):
             self.removeExecutor(executor)
             
     def execute(self):
+        print('Collect machines')
         self.collectMachines()
+        print('Create tasks')
         self.createTasks()
+        print('Run tasks')
         self.submitTasks()
         print()
 

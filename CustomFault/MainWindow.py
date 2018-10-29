@@ -19,6 +19,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def loadJsonFile(self):
         fn, fileType = QFileDialog.getOpenFileName(self, 'Open File', None, 'Json files (*.json)')
         self.jsonLineEdit.setText(fn)
+        self.rshLineEdit.setText('')
+        self.pendingLineEdit.setText('')
+        self.runningLineEdit.setText('')
+        self.okLineEdit.setText('')
+        self.errorsLineEdit.setText('')
+        self.plainTextEdit.clear()
+
 
     def run(self):
         global app
@@ -41,7 +48,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tasksManager.dataChanged.connect(self.dataChanged)
         self.tasksManager.addJob.connect(self.addTableJob)
         self.tasksManager.removeJob.connect(self.removeTableJob)
-        self.statusbar.showMessage('CollectMachine')
+        self.statusbar.showMessage('Collect machines')
         self.tasksManager.collectMachines()
         # prepare for tablewidget showing
         self.needToken = self.tasksManager.needToken
@@ -65,19 +72,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tasksManager.createTasks()
         self.progressBar.setRange(0, self.tasksManager.jobsNum)
         self.progressBar.setValue(0)
-        self.statusbar.showMessage('Submit tasks')
+        self.statusbar.showMessage('Run tasks')
         self.tasksManager.submitTasks()
         while len(self.tasksManager.executors) != 0:
             pass
         print()
         self.statusbar.showMessage('Create report')
         self.reportManager.execute()
+        self.proceedReport()
         self.statusbar.showMessage('Finished')
 
         self.jsonButton.setEnabled(True)
         self.runButton.setEnabled(True)
         app.processEvents()
-        
+
+    def proceedReport(self):
+        with open(self.reportManager.fileName, 'r') as f:
+            for line in f:
+                self.plainTextEdit.appendPlainText(line)
+                
     def dataChanged(self):
         global app
         self.rshLineEdit.setText(str(self.tasksManager.hostsNum))

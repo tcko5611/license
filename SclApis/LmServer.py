@@ -9,6 +9,8 @@ import time
 import re
 import random
 import string
+from PyQt5.QtCore import QObject, pyqtSignal
+
 # from utils.Singleton import Singleton
 
 class EchoThread(threading.Thread):
@@ -23,61 +25,78 @@ class EchoThread(threading.Thread):
         data = self.s.recv(1024)
         s = data.decode()
         if s == 'Nanosim':
-            print('Checkout Nanosim License')
+            str1 = 'Checkout Nanosim License'
+            self.server.setMessage(str1)
             self.s.sendall(b'SUCCESS')
         elif s == 'DVP' :
-            print('Checkout DVP License')
+            str1 = 'Checkout DVP License'
+            self.server.setMessage(str1)
             self.s.sendall(b'SUCCESS')
         elif re.match(r'NewFeature@[0-9]+', s):
             data = s.split('@')
-            # create tokens in LmServer
-            # self.server.createTokens(10 * int(data[1]))
-            print('Checkout NewFeature linces')
+            str1 = 'Checkout NewFeature lincens'
+            self.server.setMessage(str1)
             self.s.sendall(b'SUCCESS')
         elif re.match(r'inittoken@[0-9]+', s):
             data = s.split('@')
             # create tokens in LmServer
             self.server.createTokens(int(data[1]))
-            print('Init NewFeature tokens')
+            str1 = 'Init NewFeature tokens'
+            self.server.setMessage(str1)
             self.s.sendall(b'SUCCESS')
         elif re.match(r'token@[0-9]+', s):
             data = s.split('@')
             i = int(data[1])
             token = self.server.getToken(i)
             if token != None:
-                print('Send token ' + token + ' at ' + str(i))
+                str1 = 'Send token ' + token + ' at ' + str(i)
+                self.server.setMessage(str1)
                 self.s.sendall(token.encode())
             else:
-                print('Send token at ' + str(i) + ' FAIL')
+                str1 = 'Send token at ' + str(i) + ' FAIL'
+                self.server.setMessage(str1)
                 self.s.sendall(b'FAIL')
         elif re.match(r'validateToken@.+', s):
             # print(s)
             data = s.split('@', 1)
             # print(data[1])
             if self.server.validateToken(data[1]) :
-                print('Valiadte Token ' + data[1] + ' SUCESS')
+                str1 = 'Valiadte Token ' + data[1] + ' SUCESS'
+                self.server.setMessage(str1)
                 self.s.sendall(b'SUCCESS')
             else :
-                print('Valiadte Token ' + data[1] + ' FAIL')
+                str1 = 'Valiadte Token ' + data[1] + ' FAIL'
+                self.server.setMessage(str1)
                 self.s.sendall(b'FAIL')
         else:
-            print('UNKNOWN REQUEST')
+            str1 = 'UNKNOWN REQUEST'
+            self.server.setMessage(str1)
             self.s.sendall(b'FAIL') 
         
-class LmServer():
+class LmServer(QObject, threading.Thread):
     tokens = []
-    def __init__(self, host, port):
+    sendMessage = pyqtSignal(str)
+
+    def __init__(self, host, port, parent = None):
+        super(LmServer, self).__init__(parent)
         self.HOST = host
         self.PORT = port
         self.lock = threading.Lock()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.bind((self.HOST, self.PORT))
+        
+    def run(self):
         while True:
             self.s.listen(1)
             conn, addr = self.s.accept()
             if conn != None :
                 EchoThread(conn, addr, self).start()
- 
+        
+    def setMessage(self, str1) :
+        with self.lock:
+            print(str1)
+            self.sendMessage.emit(str1)
+            
     def createTokens(self, num):
         with self.lock:
             self.tokens = []
@@ -110,4 +129,6 @@ if __name__ == '__main__':
                         help='port number')
     
     args = parser.parse_args()
-    LmServer(args.host, args.port)
+    p = LmServer(args.host, args.port)
+    print('LM Server started')
+    p.start()
