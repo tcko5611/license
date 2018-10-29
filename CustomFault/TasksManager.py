@@ -54,11 +54,6 @@ class Executor(threading.Thread):
             for line in f:
                 if m.match(line):
                     self.success = True
-        if self.host :
-            self.tasksManager.pushHost(self.host)
-        if self.token :
-            self.licManager.pushToken(self.token)
-        self.tasksManager.removeExecutor(self)
 
 class TasksManager(QObject):
     dataChanged = pyqtSignal()
@@ -91,6 +86,11 @@ class TasksManager(QObject):
             print('launch: rsh={0:3d} pending={1:3d} running={2:3d} ok={3:3d} errors={4:3d}'.format(self.hostsNum, self.pending, self.running, self.ok, self.errors), end='\r')
         
     def removeExecutor(self, executor):
+        if executor.host :
+            self.pushHost(executor.host)
+        if executor.token :
+            self.licManager.pushToken(executor.token)
+
         with self.lock:
             self.running -= 1
             if executor.success:
@@ -168,13 +168,22 @@ class TasksManager(QObject):
                     executor = Executor(host, task, self, self.licManager)
                     self.pushExecutor(executor)
                     executor.start()
-                    
+            excludeExecutors = []
+            for executor in self.executors:
+                if not executor.is_alive():
+                    excludeExecutors.append(executor)
+            for executor in excludeExecutors:
+                self.removeExecutor(executor)
+        for executor in self.executors:
+            executor.join()
+        executors = self.executors.copy()
+        for executor in executors:
+            self.removeExecutor(executor)
+            
     def execute(self):
         self.collectMachines()
         self.createTasks()
         self.submitTasks()
-        while len(self.executors) != 0:
-            pass
         print()
 
 if __name__ == '__main__':
