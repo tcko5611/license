@@ -4,7 +4,15 @@ import sys
 import threading
 from SclApis.SclApis import *
 
+## Documentation for a class
+#
+# The LicManager is used to checkout license and manage tokens
 class LicManager():
+    ## The constructor, when checkout license fail will terminate the program
+    # @param prodName The product name.
+    # @param prodVersion The SRM version of the product.
+    # @param feature The feature name to be checked out.
+    # @param nlic The number of licenses to be checked out.
     def __init__(self, prodName, prodVersion, feature, nlic):
         self.prodName =  prodName
         self.prodVersion = prodVersion
@@ -45,23 +53,37 @@ class LicManager():
     def getFeature(self):
         return self.keyStr
 
+    ## Check the license use token or not
+    # @return True:use token, False: not use token
+    def useTokens(self):
+        if self.origTokens:
+            return True
+        return False
+    
     def getNlic(self):
         return self.nlic
 
     def isCheckout(self):
         return self.checkouted
+
     def isAvailableTokens(self):
         with self.lock:
             if self.availTokens:
                 return True
             return False
-
+    ## pop a token to use
+    #
+    # @return token: when has a token, None: when no token
     def popToken(self):
         with self.lock:
             if self.availTokens:
                 return self.availTokens.pop()
             return None
-
+    ## push a token back, the token should be in the original token list
+    #  and has been popout
+    #
+    # @param token Token to push back
+    # @return True: if success, False: if failure
     def pushToken(self, token):
         with self.lock:
             if token in self.origTokens and not (token in self.availTokens):
